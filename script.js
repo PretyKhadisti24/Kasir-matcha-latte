@@ -3,7 +3,7 @@
 /* =====================================================
    KONFIGURASI: tempel URL Web App Apps Script (berakhiran /exec)
    ===================================================== */
-var API_URL = 'PASTE_URL_WEB_APP_APPS_SCRIPT_DI_SINI';
+var API_URL = https://script.google.com/macros/s/AKfycbyI73UVOR0LfBKVVoyzNYbagz9fhyXGW0N_i3cQAhqZ594NAFeg6tLRCzs7OHCuXf36ag/exec;
 /* ===================================================== */
 
 var PIN_KEY = 'kasir_pin';
