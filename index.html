@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#2f4a2a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>Kasir &amp; Keuangan</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
 
@@ -28,6 +28,10 @@
       <button type="button" id="btnKunci" class="btn-ghost hide">Kunci</button>
     </div>
   </header>
+
+  <div class="wrap">
+    <div id="fatal" class="fatal hide" role="alert"></div>
+  </div>
 
   <main class="wrap">
 
@@ -140,6 +144,24 @@
 
   <div id="toast" role="status" aria-live="polite"></div>
 
-  <script src="script.js"></script>
+  <!-- Penangkap error: jika script.js gagal jalan, pesannya tampil di layar -->
+  <script>
+    (function () {
+      function tampil(msg) {
+        var f = document.getElementById('fatal');
+        if (!f) return;
+        f.textContent = msg;
+        f.classList.remove('hide');
+      }
+      window.addEventListener('error', function (e) {
+        if (e.target && e.target.tagName) return; // gagal muat resource ditangani onerror
+        tampil('Ada error di script.js: ' + (e.message || 'tidak diketahui') + (e.lineno ? ' (baris ' + e.lineno + ')' : ''));
+      });
+      window.kasirScriptGagal = function () {
+        tampil('File script.js gagal dimuat. Pastikan script.js ada di folder yang sama dengan index.html di GitHub, lalu refresh.');
+      };
+    })();
+  </script>
+  <script src="script.js?v=3" onerror="kasirScriptGagal()"></script>
 </body>
 </html>

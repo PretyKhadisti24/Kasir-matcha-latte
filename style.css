@@ -589,6 +589,17 @@ input:focus, select:focus, textarea:focus {
 }
 #t-menu .btn { margin-top: 14px; }
 
+/* ---------- Pesan error fatal ---------- */
+.fatal {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: var(--ember);
+  color: #fff;
+  border-radius: var(--r-ctl);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+
 /* ---------- Layar lebar ---------- */
 @media (min-width: 700px) {
   .wrap { max-width: 640px; }
