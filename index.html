@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#2f4a2a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Kasir &amp; Keuangan</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Layar PIN (muncul hanya jika API dikunci PIN) -->
+  <div id="login" class="login hide" role="dialog" aria-labelledby="loginTitle">
+    <form id="loginForm" class="login-box" autocomplete="off">
+      <h2 id="loginTitle">Masukkan PIN</h2>
+      <p class="muted">PIN diminta supaya hanya tim yang bisa mengisi data.</p>
+      <label for="pin">PIN</label>
+      <input id="pin" type="password" inputmode="numeric" autocomplete="current-password" required>
+      <p id="loginErr" class="form-error hide"></p>
+      <button type="submit" class="btn btn-solid" id="btnLogin">Buka</button>
+    </form>
+  </div>
+
+  <header class="top">
+    <div class="wrap top-in">
+      <h1>Kasir &amp; Keuangan</h1>
+      <button type="button" id="btnKunci" class="btn-ghost hide">Kunci</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <!-- ORDER -->
+    <section id="t-order" class="tab active" aria-label="Order baru">
+      <label for="nama">Nama pemesan</label>
+      <input id="nama" maxlength="60" placeholder="Nama pemesan" autocomplete="off">
+
+      <h2 class="sec-title">Pilih menu</h2>
+      <div id="menuList" class="menu-list"><p class="muted">Memuat menu...</p></div>
+
+      <label for="catatan">Catatan (boleh kosong)</label>
+      <textarea id="catatan" maxlength="200" placeholder="Contoh: es sedikit, tanpa pedas"></textarea>
+
+      <div class="cartbar">
+        <div class="wrap cart-in">
+          <div class="cart-sum">
+            <span id="cartCount" class="cart-count">Belum ada item</span>
+            <strong id="total" class="cart-total">Rp 0</strong>
+          </div>
+          <button type="button" id="btnOrder" class="btn btn-light" disabled>Simpan order</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ANTRIAN -->
+    <section id="t-antrian" class="tab" aria-label="Antrian order">
+      <div class="filters" id="filters" role="tablist">
+        <button type="button" data-f="belum" class="on" role="tab">Belum <span id="cBelum">0</span></button>
+        <button type="button" data-f="selesai" role="tab">Selesai <span id="cSelesai">0</span></button>
+        <button type="button" data-f="semua" role="tab">Semua <span id="cSemua">0</span></button>
+      </div>
+      <div id="orderList"></div>
+    </section>
+
+    <!-- KEUANGAN -->
+    <section id="t-uang" class="tab" aria-label="Catat keuangan">
+      <div class="seg" id="segJenis">
+        <button type="button" data-j="Pemasukan" class="on">Pemasukan</button>
+        <button type="button" data-j="Pengeluaran">Pengeluaran</button>
+      </div>
+
+      <label for="ket">Keterangan</label>
+      <input id="ket" maxlength="120" placeholder="Contoh: beli susu 5 liter" autocomplete="off">
+
+      <label for="kat">Kategori</label>
+      <select id="kat"></select>
+
+      <label for="jumlah">Jumlah (Rp)</label>
+      <input id="jumlah" inputmode="numeric" placeholder="0" autocomplete="off">
+
+      <div id="boxSumber" class="hide">
+        <label id="lblSumber">Sumber dana</label>
+        <div class="seg" id="segSumber" role="group" aria-labelledby="lblSumber">
+          <button type="button" data-s="Pribadi">Pribadi</button>
+          <button type="button" data-s="Dana hasil">Dana hasil</button>
+        </div>
+      </div>
+
+      <div id="boxNama" class="hide">
+        <label for="namaDana">Nama pemilik dana pribadi</label>
+        <input id="namaDana" maxlength="60" placeholder="Siapa yang menalangi?" autocomplete="off">
+      </div>
+
+      <label for="catatanU">Catatan (boleh kosong)</label>
+      <input id="catatanU" maxlength="200" autocomplete="off">
+
+      <button type="button" id="btnUang" class="btn btn-solid">Simpan pemasukan</button>
+    </section>
+
+    <!-- DASHBOARD -->
+    <section id="t-dash" class="tab" aria-label="Dashboard">
+      <button type="button" id="btnRefresh" class="btn btn-outline">Muat ulang data</button>
+      <div id="dash"><p class="muted">Memuat...</p></div>
+    </section>
+
+  </main>
+
+  <nav class="nav" id="nav" aria-label="Menu utama">
+    <button type="button" data-t="order" class="on">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z M9 8h6 M9 12h6"/></svg>
+      <span>Order</span>
+    </button>
+    <button type="button" data-t="antrian">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6l2 2 3-3 M3 15l2 2 3-3 M12 7h9 M12 16h9"/></svg>
+      <span>Antrian</span>
+      <b class="badge hide" id="badge">0</b>
+    </button>
+    <button type="button" data-t="uang">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h15a3 3 0 0 1 3 3v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M3 7l12-3v3 M16 14h2"/></svg>
+      <span>Keuangan</span>
+    </button>
+    <button type="button" data-t="dash">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V10 M12 20V4 M19 20v-7"/></svg>
+      <span>Dashboard</span>
+    </button>
+  </nav>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
