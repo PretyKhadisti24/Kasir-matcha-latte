@@ -542,6 +542,53 @@ input:focus, select:focus, textarea:focus {
 .login-box h2 { margin: 0 0 4px; font-size: var(--fs-lg); text-align: center; }
 .login-box .muted { text-align: center; }
 
+/* ---------- Atur menu ---------- */
+.edit-note { margin: 0 0 14px; }
+.edit-row {
+  margin-bottom: 12px;
+  padding: 12px;
+  background: var(--paper);
+  border: 1.5px solid var(--line-strong);
+  border-left: 6px solid var(--leaf);
+  border-radius: var(--r-card);
+}
+.edit-row.off { background: var(--butter-2); border-left-color: var(--line-strong); }
+.edit-line { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.price-wrap { position: relative; flex: 1; min-width: 0; }
+.price-wrap span {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-weight: 700;
+}
+.price-wrap input { padding-left: 42px; }
+.sell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--ink);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.sell input { width: 26px; height: 26px; margin: 0; accent-color: var(--leaf); }
+.btn-del {
+  flex: none;
+  padding: 10px 12px;
+  border: 1.5px solid var(--ember);
+  border-radius: var(--r-ctl);
+  background: #fff;
+  color: var(--ember);
+  font: inherit;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  cursor: pointer;
+}
+#t-menu .btn { margin-top: 14px; }
+
 /* ---------- Layar lebar ---------- */
 @media (min-width: 700px) {
   .wrap { max-width: 640px; }

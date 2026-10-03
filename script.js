@@ -3,7 +3,7 @@
 /* =====================================================
    KONFIGURASI: tempel URL Web App Apps Script (berakhiran /exec)
    ===================================================== */
-var API_URL = https://script.google.com/macros/s/AKfycbyI73UVOR0LfBKVVoyzNYbagz9fhyXGW0N_i3cQAhqZ594NAFeg6tLRCzs7OHCuXf36ag/exec;
+var API_URL = 'PASTE_URL_WEB_APP_APPS_SCRIPT_DI_SINI';
 /* ===================================================== */
 
 var PIN_KEY = 'kasir_pin';
@@ -13,6 +13,7 @@ var S = {
   qty: {},
   filter: 'belum',
   orders: [],
+  draft: [],
   jenis: 'Pemasukan',
   sumber: '',
   tab: 'order',
@@ -84,6 +85,7 @@ function showTab(t) {
   document.querySelectorAll('#nav button').forEach(function (b) { b.classList.toggle('on', b.dataset.t === t); });
   window.scrollTo(0, 0);
   if (t === 'antrian') loadOrders();
+  if (t === 'menu') loadMenuEdit();
   if (t === 'dash') loadDash();
 }
 $('nav').addEventListener('click', function (e) {
@@ -96,14 +98,14 @@ function renderMenu() {
   var box = $('menuList');
   box.innerHTML = '';
   if (!S.menu.length) {
-    box.appendChild(el('p', 'empty', 'Menu masih kosong. Isi tab "Menu" di Google Sheet.'));
+    box.appendChild(el('p', 'empty', 'Menu masih kosong. Tambahkan lewat tab Menu di bawah.'));
     return;
   }
   S.menu.forEach(function (m) {
     var row = el('div', 'menu-row');
     var info = el('div');
     info.appendChild(el('div', 'menu-name', m.nama));
-    info.appendChild(el('div', 'menu-price', rp(m.harga)));
+    info.appendChild(el('div', 'menu-price', m.harga ? rp(m.harga) : 'Harga belum diisi'));
 
     var st = el('div', 'stepper');
     var minus = el('button', null, '−');
@@ -342,6 +344,110 @@ $('btnUang').addEventListener('click', async function () {
   } finally {
     b.disabled = false;
     syncUang();
+  }
+});
+
+/* ---------- Atur menu ---------- */
+function fmtHarga(n) { return n ? new Intl.NumberFormat('id-ID').format(n) : ''; }
+
+async function loadMenuEdit() {
+  try {
+    var all = await api('getMenuAll');
+    S.draft = all.map(function (m) { return { nama: m.nama, harga: m.harga, aktif: m.aktif }; });
+    renderMenuEdit();
+  } catch (e) {
+    if (e.code === 'AUTH') return showLogin();
+    toast(e.message, true);
+  }
+}
+
+function renderMenuEdit() {
+  var box = $('menuEdit');
+  box.innerHTML = '';
+  if (!S.draft.length) {
+    box.appendChild(el('p', 'empty', 'Belum ada menu. Tekan "Tambah menu".'));
+    return;
+  }
+  S.draft.forEach(function (m, i) {
+    var row = el('div', 'edit-row' + (m.aktif ? '' : ' off'));
+
+    var nama = document.createElement('input');
+    nama.value = m.nama;
+    nama.maxLength = 60;
+    nama.placeholder = 'Nama menu';
+    nama.setAttribute('aria-label', 'Nama menu ' + (i + 1));
+    nama.addEventListener('input', function () { m.nama = nama.value; });
+    row.appendChild(nama);
+
+    var line = el('div', 'edit-line');
+
+    var pw = el('div', 'price-wrap');
+    pw.appendChild(el('span', null, 'Rp'));
+    var harga = document.createElement('input');
+    harga.inputMode = 'numeric';
+    harga.placeholder = '0';
+    harga.value = fmtHarga(m.harga);
+    harga.setAttribute('aria-label', 'Harga ' + (m.nama || 'menu ' + (i + 1)));
+    harga.addEventListener('input', function () {
+      var d = harga.value.replace(/\D/g, '');
+      m.harga = d ? Number(d) : 0;
+      harga.value = fmtHarga(m.harga);
+    });
+    pw.appendChild(harga);
+    line.appendChild(pw);
+
+    var sell = el('label', 'sell');
+    var cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = m.aktif;
+    cb.addEventListener('change', function () {
+      m.aktif = cb.checked;
+      row.classList.toggle('off', !m.aktif);
+    });
+    sell.appendChild(cb);
+    sell.appendChild(el('span', null, 'Dijual'));
+    line.appendChild(sell);
+
+    var del = el('button', 'btn-del', 'Hapus');
+    del.type = 'button';
+    del.addEventListener('click', function () {
+      if (!confirm('Hapus "' + (m.nama || 'menu ini') + '" dari daftar menu?')) return;
+      S.draft.splice(i, 1);
+      renderMenuEdit();
+    });
+    line.appendChild(del);
+
+    row.appendChild(line);
+    box.appendChild(row);
+  });
+}
+
+$('btnTambahMenu').addEventListener('click', function () {
+  S.draft.push({ nama: '', harga: 0, aktif: true });
+  renderMenuEdit();
+  var rows = document.querySelectorAll('#menuEdit .edit-row');
+  if (rows.length) rows[rows.length - 1].querySelector('input').focus();
+});
+
+$('btnSimpanMenu').addEventListener('click', async function () {
+  var b = $('btnSimpanMenu');
+  b.disabled = true;
+  b.textContent = 'Menyimpan...';
+  try {
+    var r = await api('saveMenu', { items: S.draft });
+    S.menu = r.menu;
+    S.draft = r.semua.map(function (m) { return { nama: m.nama, harga: m.harga, aktif: m.aktif }; });
+    Object.keys(S.qty).forEach(function (k) {
+      if (!S.menu.some(function (m) { return m.nama === k; })) delete S.qty[k];
+    });
+    renderMenu();
+    renderMenuEdit();
+    toast('Menu disimpan.');
+  } catch (e) {
+    toast(e.message, true);
+  } finally {
+    b.disabled = false;
+    b.textContent = 'Simpan menu';
   }
 });
 
