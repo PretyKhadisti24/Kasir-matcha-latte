@@ -3,10 +3,10 @@
 /* =====================================================
    KONFIGURASI: tempel URL Web App Apps Script (berakhiran /exec)
    ===================================================== */
-var API_URL = https://script.google.com/macros/s/AKfycbyo79qh2GGZZrzoi0Xog63iwwcV6H0XoqpzEvvZXBPlkH-AOGv9Q52r-3qq34MGTBKZkQ/exec;
+var API_URL = 'https://script.google.com/macros/s/AKfycbyo79qh2GGZZrzoi0Xog63iwwcV6H0XoqpzEvvZXBPlkH-AOGv9Q52r-3qq34MGTBKZkQ/exec';
 /* ===================================================== */
 
-var PIN_KEY = 242424;
+var PIN_KEY = '242424';
 
 var S = {
   menu: [], katM: [], katK: [],
